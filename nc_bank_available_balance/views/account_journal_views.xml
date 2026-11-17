@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form_inherit" model="ir.ui.view">
+        <field name="name">account.journal.form.nc.default.bank</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='suspense_account_id']" position="before">
+                <field name="nc_default_bank_journal_id"
+                       invisible="type != 'general'"
+                       options="{'no_create': True}"
+                       groups="account.group_account_readonly"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_journal_dashboard_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">account.journal.dashboard.kanban.nc.available</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view"/>
+        <field name="arch" type="xml">
+            <!-- Payments now also include misc. entries: open the Bank Balances view instead of the payments list. -->
+            <xpath expr="//div[@id='dashboard_bank_cash_outstanding_balance']/a" position="replace">
+                <a type="object" name="nc_action_open_bank_balances" context="{'nc_payments_only': True}">
+                    Payments
+                </a>
+            </xpath>
+            <xpath expr="//div[@id='dashboard_bank_cash_outstanding_balance']/.." position="after">
+                <div class="row" t-if="dashboard.nc_show_available">
+                    <div id="dashboard_bank_cash_available" class="col overflow-hidden text-start">
+                        <a type="object" name="nc_action_open_bank_balances" class="fw-bold">Available</a>
+                    </div>
+                    <div class="col-auto text-end">
+                        <span dir="ltr" t-att-class="dashboard.nc_available_negative ? 'text-danger fw-bold' : 'fw-bold'">
+                            <t t-out="dashboard.nc_available"/>
+                        </span>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

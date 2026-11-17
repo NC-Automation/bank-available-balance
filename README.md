@@ -1,6 +1,6 @@
 # Bank Available Balance for Odoo 19
 
-How-to for the **NC Bank Available Balance** Odoo module: see what a checking account
+The **NC Bank Available Balance** Odoo module and how to use it: see what a checking account
 will actually hold once every pending payment and bank transaction has cleared.
 
 ## Video walkthrough (1 min)
@@ -39,9 +39,49 @@ Available = Balance − Unreconciled transactions + Incoming payments + Outgoing
 
   Click Balance or Available to show everything again.
 
+## Installation
+
+Requires **Odoo 19** (Community or Enterprise). It depends only on the standard
+`account` module.
+
+The module is the [`nc_bank_available_balance`](nc_bank_available_balance) folder in this
+repository.
+
+### Self-hosted Odoo
+
+1. Copy the module folder into one of your addons directories:
+
+   ```bash
+   git clone https://github.com/NC-Automation/bank-available-balance.git
+   cp -r bank-available-balance/nc_bank_available_balance /path/to/your/addons/
+   ```
+
+   Or add the cloned repository folder itself to `addons_path` in your Odoo config.
+2. Restart Odoo.
+3. Turn on developer mode (*Settings ▸ Activate the developer mode*).
+4. Go to *Apps ▸ Update Apps List*.
+5. Search for **Bank Available Balance** (remove the *Apps* filter) and click **Activate**.
+
+### Odoo.sh
+
+1. Add this repository as a submodule of your Odoo.sh repository:
+
+   ```bash
+   git submodule add -b main https://github.com/NC-Automation/bank-available-balance.git bank-available-balance
+   git commit -m "Add Bank Available Balance module"
+   git push
+   ```
+
+   Odoo.sh adds submodule folders to the addons path automatically.
+2. When the build is done, install **Bank Available Balance** from *Apps* as above.
+
+### Odoo Online (SaaS)
+
+Odoo Online doesn't allow custom Python modules. You need Odoo.sh or a self-hosted Odoo.
+
 ## Setup
 
-1. Install the `nc_bank_available_balance` module.
+1. Install the module (see above).
 2. Open *Accounting ▸ Configuration ▸ Journals ▸ Miscellaneous Operations* and set
    **Default Bank** on the *Journal Entries* tab. Existing open items without a bank get it too.
 3. To change the bank on a single item, use the **Bank** column on the entry's Journal Items
@@ -49,3 +89,7 @@ Available = Balance − Unreconciled transactions + Incoming payments + Outgoing
 
 The Default Bank field and Journal Items tab need *Show Full Accounting Features* turned on
 for the user.
+
+## License
+
+[LGPL-3](LICENSE)

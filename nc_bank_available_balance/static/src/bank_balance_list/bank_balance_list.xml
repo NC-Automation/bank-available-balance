@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="nc_bank_available_balance.ListRenderer" t-inherit="web.ListRenderer" t-inherit-mode="primary">
+        <xpath expr="//div[hasclass('o_list_renderer')]" position="before">
+            <BankBalanceHeader list="props.list"/>
+        </xpath>
+    </t>
+
+    <t t-name="nc_bank_available_balance.BankBalanceHeader">
+        <div class="o_nc_bank_balance_header border-bottom bg-view px-3 py-2" t-if="state.data">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <label class="fw-bold text-nowrap mb-0" for="nc_bank_balance_journal">Bank Account</label>
+                <select id="nc_bank_balance_journal" class="form-select w-auto" t-on-change="onJournalChange">
+                    <t t-foreach="state.data.journals" t-as="journal" t-key="journal.id">
+                        <option t-att-value="journal.id"
+                                t-att-selected="state.data.journal and journal.id === state.data.journal.id"
+                                t-out="journal.name"/>
+                    </t>
+                </select>
+            </div>
+            <t t-set="s" t-value="state.data.summary"/>
+            <div t-if="s" class="o_nc_bank_bubbles d-flex flex-wrap align-items-stretch gap-2">
+                <button type="button" class="o_nc_bubble o_nc_bubble_total btn"
+                        t-att-class="{'active': noCategoryActive}"
+                        t-on-click="() => this.showCategory(false)" title="Show all open items">
+                    <div class="o_nc_bubble_label">Balance</div>
+                    <div class="o_nc_bubble_amount" t-out="s.balance.formatted"/>
+                    <div class="o_nc_bubble_sub">from bank feed</div>
+                </button>
+                <div class="o_nc_operator">−</div>
+                <button type="button" class="o_nc_bubble btn"
+                        t-att-class="{'active': isCategoryActive('unreconciled')}"
+                        t-on-click="() => this.showCategory('unreconciled')">
+                    <div class="o_nc_bubble_label">Unreconciled Transactions</div>
+                    <div class="o_nc_bubble_amount" t-out="s.unreconciled.formatted"/>
+                    <div class="o_nc_bubble_sub"><t t-out="s.unreconciled_count"/> to reconcile</div>
+                </button>
+                <div class="o_nc_operator">+</div>
+                <button type="button" class="o_nc_bubble btn"
+                        t-att-class="{'active': isCategoryActive('incoming')}"
+                        t-on-click="() => this.showCategory('incoming')">
+                    <div class="o_nc_bubble_label">Incoming Payments</div>
+                    <div class="o_nc_bubble_amount" t-out="s.incoming.formatted"/>
+                    <div class="o_nc_bubble_sub"><t t-out="s.incoming_count"/> not cleared</div>
+                </button>
+                <div class="o_nc_operator">+</div>
+                <button type="button" class="o_nc_bubble btn"
+                        t-att-class="{'active': isCategoryActive('outgoing')}"
+                        t-on-click="() => this.showCategory('outgoing')">
+                    <div class="o_nc_bubble_label">Outgoing Payments</div>
+                    <div class="o_nc_bubble_amount" t-out="s.outgoing.formatted"/>
+                    <div class="o_nc_bubble_sub"><t t-out="s.outgoing_count"/> not cleared</div>
+                </button>
+                <div class="o_nc_operator">=</div>
+                <button type="button" class="o_nc_bubble o_nc_bubble_total btn"
+                        t-att-class="{'active': noCategoryActive, 'o_nc_negative': s.available.value &lt; 0}"
+                        t-on-click="() => this.showCategory(false)" title="Show all open items">
+                    <div class="o_nc_bubble_label">Available</div>
+                    <div class="o_nc_bubble_amount" t-out="s.available.formatted"/>
+                    <div class="o_nc_bubble_sub">after everything clears</div>
+                </button>
+            </div>
+        </div>
+    </t>
+</templates>

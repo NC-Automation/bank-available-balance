@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bank column on the Journal Items tab of misc. entries -->
+    <record id="view_move_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.nc.bank.journal</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- The field is line_ids, or journal_line_ids once account_reports (Enterprise) is installed. -->
+            <xpath expr="//page[@id='aml_tab']/field/list/field[@name='account_id']" position="after">
+                <field name="nc_is_outstanding_line" column_invisible="True"/>
+                <field name="nc_bank_journal_id"
+                       optional="show"
+                       column_invisible="parent.move_type != 'entry'"
+                       invisible="not nc_is_outstanding_line"
+                       options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Journal Items list: optional Bank column (editable there on posted entries) -->
+    <record id="view_move_line_tree_inherit" model="ir.ui.view">
+        <field name="name">account.move.line.list.nc.bank.journal</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_id']" position="after">
+                <field name="nc_bank_journal_id" optional="hide" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Bank Balances -->
+    <record id="view_bank_balance_list" model="ir.ui.view">
+        <field name="name">account.move.line.list.nc.bank.balance</field>
+        <field name="model">account.move.line</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Bank Balances" js_class="nc_bank_balance_list"
+                  editable="bottom" create="0" delete="0" default_order="date desc, id desc">
+                <field name="company_currency_id" column_invisible="True"/>
+                <field name="nc_balance_currency_id" column_invisible="True"/>
+                <field name="nc_balance_source" column_invisible="True"/>
+                <field name="date" readonly="1"/>
+                <field name="move_id" string="Entry" readonly="1" widget="many2one" options="{'no_open': False}"/>
+                <field name="journal_id" string="Journal" readonly="1" optional="show" options="{'no_open': True}"/>
+                <field name="partner_id" readonly="1" optional="show"/>
+                <field name="name" string="Label" readonly="1"/>
+                <field name="ref" readonly="1" optional="hide"/>
+                <field name="nc_balance_category" readonly="1" widget="badge"
+                       decoration-warning="nc_balance_category == 'unreconciled'"
+                       decoration-success="nc_balance_category == 'incoming'"
+                       decoration-info="nc_balance_category == 'outgoing'"/>
+                <field name="nc_balance_journal_id" column_invisible="True"/>
+                <field name="nc_bank_journal_id"
+                       string="Bank"
+                       optional="show"
+                       readonly="nc_balance_source != 'misc'"
+                       invisible="nc_balance_source != 'misc'"
+                       required="nc_balance_source == 'misc'"
+                       options="{'no_create': True}"/>
+                <field name="nc_open_amount" readonly="1" sum="Total" decoration-danger="nc_open_amount &lt; 0"/>
+                <button name="action_open_business_doc" type="object" icon="fa-external-link" title="Open document"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bank_balance_search" model="ir.ui.view">
+        <field name="name">account.move.line.search.nc.bank.balance</field>
+        <field name="model">account.move.line</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="Bank Balances">
+                <field name="nc_balance_journal_id"/>
+                <field name="partner_id"/>
+                <field name="name"/>
+                <field name="move_id"/>
+                <filter name="nc_unreconciled" string="Unreconciled Transactions"
+                        domain="[('nc_balance_category', 'in', ['unreconciled'])]"/>
+                <filter name="nc_incoming" string="Incoming Payments"
+                        domain="[('nc_balance_category', 'in', ['incoming'])]"/>
+                <filter name="nc_outgoing" string="Outgoing Payments"
+                        domain="[('nc_balance_category', 'in', ['outgoing'])]"/>
+                <separator/>
+                <filter name="date" string="Date" date="date"/>
+                <group>
+                    <filter name="group_by_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_by_journal" string="Journal" context="{'group_by': 'journal_id'}"/>
+                    <filter name="group_by_date" string="Date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_bank_balances" model="ir.actions.act_window">
+        <field name="name">Bank Balances</field>
+        <field name="res_model">account.move.line</field>
+        <field name="path">bank-balances</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_bank_balance_list"/>
+        <field name="search_view_id" ref="view_bank_balance_search"/>
+        <field name="domain">[('nc_balance_category', 'in', ['unreconciled', 'incoming', 'outgoing'])]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing pending on this bank account</p>
+            <p>All bank transactions are reconciled and no payment is waiting to clear.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_bank_balances"
+              name="Bank Balances"
+              parent="account.account_transactions_menu"
+              action="action_bank_balances"
+              groups="account.group_account_readonly"
+              sequence="5"/>
+</odoo>

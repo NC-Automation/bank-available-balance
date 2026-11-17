@@ -1,0 +1,52 @@
+.o_nc_bank_balance_header {
+    .o_nc_bubble {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 10rem;
+        padding: 0.5rem 0.875rem;
+        border: 1px solid $border-color;
+        border-radius: 0.75rem;
+        background-color: $o-view-background-color;
+        text-align: start;
+
+        &:hover {
+            border-color: $o-action;
+        }
+
+        &.active {
+            border-color: $o-action;
+            box-shadow: inset 0 0 0 1px $o-action;
+        }
+    }
+
+    .o_nc_bubble_total {
+        background-color: rgba($o-action, 0.06);
+    }
+
+    .o_nc_bubble_label {
+        font-size: 0.8rem;
+        color: $text-muted;
+    }
+
+    .o_nc_bubble_amount {
+        font-size: 1.15rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .o_nc_bubble_sub {
+        font-size: 0.75rem;
+        color: $text-muted;
+    }
+
+    .o_nc_negative .o_nc_bubble_amount {
+        color: $danger;
+    }
+
+    .o_nc_operator {
+        align-self: center;
+        font-size: 1.25rem;
+        color: $text-muted;
+    }
+}
