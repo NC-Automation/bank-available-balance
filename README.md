@@ -5,9 +5,9 @@ will actually hold once every pending payment and bank transaction has cleared.
 
 ## Video walkthrough (1 min)
 
-[![Watch the walkthrough](demo-poster.png)](bank-available-balance-demo.mp4)
+[![Watch the walkthrough](demo-poster.png)](https://nc-automation.github.io/bank-available-balance/)
 
-Click the image to open [the video](bank-available-balance-demo.mp4). The video uses Odoo demo data.
+Click the image to [watch the video](https://nc-automation.github.io/bank-available-balance/), or [download the MP4](https://github.com/NC-Automation/bank-available-balance/raw/main/bank-available-balance-demo.mp4). The video uses Odoo demo data.
 
 ## The problem
 
